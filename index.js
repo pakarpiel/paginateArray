@@ -13,28 +13,36 @@
 const paginateArray = (dataEntries, settings = { actualPageIdx:1, entriesOnPage:10 } ) => {
     let {actualPageIdx:pageIdx, entriesOnPage} = settings;
     let pagesNumber;
+ 
+    let dataEntriesIsArray = Array.isArray(dataEntries) && dataEntries != [];
+    let settingsIsObject = typeof settings === 'object';
+    let pageIdxIsCorrect = isPositiveNumber(pageIdx);
+    let entriesOnPageIsCorrect = isPositiveNumber(entriesOnPage);
 
-    let correctArguments = Array.isArray(dataEntries) && dataEntries != [] && typeof settings === 'object' && typeof pageIdx === 'number' && pageIdx > 0 && typeof entriesOnPage === 'number' && entriesOnPage > 0;
+    let correctArguments = dataEntriesIsArray && settingsIsObject && pageIdxIsCorrect && entriesOnPageIsCorrect;
 
     if(correctArguments) {
         pagesNumber = Math.ceil(dataEntries.length/entriesOnPage);
+        startDataIdx = (pageIdx -1) * entriesOnPage;
+        if(pagesNumber >= pageIdx){
+            switch(pagesNumber){
+                case pageIdx: return entriesOnSelectedPage = dataEntries.slice(startDataIdx); 
+                default: {
+                    endDataIdx = pageIdx * entriesOnPage;
+                    return entriesOnSelectedPage = dataEntries.slice(startDataIdx, endDataIdx);
+                }
+            }
+        } else {
+            console.log("Warunki nie zostały spełnione");
+            return;
+        }
     } else {
         console.log("Podano nieprawidłowy argument");
         return;
     }
-    let conditions = correctArguments && pagesNumber >= pageIdx;
-    startDataIdx = (pageIdx -1) * entriesOnPage;
-
-    if (!conditions){
-        console.log("Warunki nie zostały spełnione");
-        return;
-    } else if (pagesNumber == pageIdx){
-        return entriesOnSelectedPage = dataEntries.slice(startDataIdx);     
-    } else {  
-        endDataIdx = pageIdx * entriesOnPage;
-        return entriesOnSelectedPage = dataEntries.slice(startDataIdx, endDataIdx);
-    } 
 }
+
+const isPositiveNumber = n => typeof n === 'number' && n > 0;
 
 // Dla sprawdzenia działania funkcji:
 paginateArray(Array.from({length: 500}, (v, k) => k +1), { actualPageIdx:9, entriesOnPage:50 });
